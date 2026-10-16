@@ -29,6 +29,8 @@ export interface Report {
   totalBytes: number
   requests: number
   demo?: boolean
+  /** true when the real API quota was exhausted and a simulated report was shown instead */
+  quotaFallback?: boolean
 }
 
 export const CATEGORIES: { key: CategoryKey; label: string }[] = [

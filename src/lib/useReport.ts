@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useQueries, useQuery } from '@tanstack/react-query'
-import { fetchReport } from './psi'
+import { fetchReport, PsiError } from './psi'
 import { makeDemoReport } from './demo'
 import type { Report, Strategy } from './metrics'
 import { useAppStore } from '../store/useAppStore'
@@ -16,13 +16,19 @@ const wait = (ms: number, signal?: AbortSignal) =>
 
 function reportQuery(url: string, strategy: Strategy, apiKey: string, demo: boolean) {
   return {
-    queryKey: ['report', url, strategy, demo] as const,
+    queryKey: ['report', url, strategy, demo, apiKey] as const,
     queryFn: async ({ signal }: { signal: AbortSignal }): Promise<Report> => {
       if (demo) {
         await wait(1400 + Math.random() * 1200, signal) // feel like a real audit
         return makeDemoReport(url, strategy)
       }
-      return fetchReport(url, strategy, { apiKey, signal })
+      try {
+        return await fetchReport(url, strategy, { apiKey: apiKey || import.meta.env.VITE_PSI_API_KEY, signal })
+      } catch (err) {
+        // Shared public quota exhausted → keep the experience alive with a clearly-labelled simulated report
+        if (err instanceof PsiError && err.kind === 'quota') return { ...makeDemoReport(url, strategy), quotaFallback: true }
+        throw err
+      }
     },
     staleTime: 10 * 60_000,
     gcTime: 30 * 60_000,
