@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  color-scheme: dark;
+  background: #070b14;
+}
+body {
+  @apply font-sans antialiased;
+}
+::selection {
+  background: rgba(34, 211, 238, 0.3);
+}
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 8px;
+}
