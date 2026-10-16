@@ -26,6 +26,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+        env:
+          # Optional: a PageSpeed API key restricted to your GitHub Pages domain
+          VITE_PSI_API_KEY: ${{ secrets.PSI_API_KEY }}
       - run: cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
